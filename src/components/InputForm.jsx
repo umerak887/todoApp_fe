@@ -10,7 +10,6 @@ const InputForm = () => {
 
   const handleChange = (e) => {
     setText(e.target.value);
-    console.log(text);
   };
 
   const addTask = async (e) => {
@@ -46,7 +45,6 @@ const InputForm = () => {
         payload
       );
       setTask(response.data);
-      console.log(response.data);
     } catch (error) {}
   };
 
