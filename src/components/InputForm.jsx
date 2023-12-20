@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TaskList from "./TaskList";
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 
 const InputForm = () => {
   const [task, setTask] = useState([]);
@@ -19,14 +19,18 @@ const InputForm = () => {
         content: text,
         status: false,
       };
-      const response = await axios.post(
-        "http://localhost:3300/createTasks",
-        newTask
-      );
-      setTask(response.data);
-      setText("");
+      const findTask = task.find((ele) => ele.content == newTask.content);
+      if (findTask) {
+        toast.error("Task already exist");
+        setText("");
+      } else {
+        const response = await axiosInstance.post("/createTasks", newTask);
+        setTask(response.data);
+        toast.success("New task created");
+        setText("");
+      }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", error);
       setText("");
     }
   };
@@ -39,28 +43,33 @@ const InputForm = () => {
         ...taskList[index],
         status: !taskList[index].status,
       };
-
-      const response = await axios.put(
-        `http://localhost:3300/updateTasks/${id}`,
-        payload
-      );
+      const findTask = task.find((ele) => ele.id == id);
+      const response = await axiosInstance.put(`/updateTasks/${id}`, payload);
       setTask(response.data);
-    } catch (error) {}
+      if (!payload.status) {
+        toast.success("Task is set as Incomplete");
+      } else {
+        toast.success("Task is set as completed");
+      }
+    } catch (error) {
+      toast.error("Something went wrong", error);
+    }
   };
 
   const removeTask = async (index) => {
     try {
       const id = task[index].id;
-      const response = await axios.delete(
-        `http://localhost:3300/deleteTasks/${id}`
-      );
+      const response = await axiosInstance.delete(`/deleteTasks/${id}`);
       setTask(response.data);
-    } catch (error) {}
+      toast.success("Task deleted successfuly");
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
   };
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:3300/getTasks");
+      const response = await axiosInstance.get("/getTasks");
       setTask(response.data);
     } catch (error) {}
   };

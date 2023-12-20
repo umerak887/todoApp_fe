@@ -6,7 +6,7 @@ const Task = ({ todo, complete, remove }) => {
       <div className="flex align-middle items-center justify-start space-x-4 p-4 bg-gradient-to-r from-slate-500 to-slate-200 rounded-t-md">
         <input
           className="bg-transparent h-10"
-          onClick={complete}
+          onChange={complete}
           checked={todo.status}
           type="checkbox"
           name=""
